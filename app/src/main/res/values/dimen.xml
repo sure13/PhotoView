@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="margin_dimen">10dp</dimen>
+    <dimen name="title_margin">50dp</dimen>
+    <dimen name="top_margin">20dp</dimen>
     <dimen name="bottom_text_size">24sp</dimen>
+    <dimen name="title_text">36sp</dimen>
+    <dimen name="size_100">100dp</dimen>
 </resources>

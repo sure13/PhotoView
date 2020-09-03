@@ -1,14 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-         android:layout_width="match_parent"
-         android:layout_height="match_parent">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginRight="@dimen/margin_dimen"
+    >
         <ImageView
             android:id="@+id/item_two_iv"
-            android:layout_width="100dp"
-            android:layout_height="100dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:scaleType="fitXY"
             android:src="@mipmap/ic_launcher"
             android:layout_marginBottom="@dimen/margin_dimen"
-            android:layout_marginRight="@dimen/margin_dimen"/>
-   </RelativeLayout>
+             />
+
+    <CheckBox
+        android:id="@+id/delte"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_marginLeft="-34dp"
+        style="@style/MyCheckbox"
+        android:visibility="gone"
+        android:clickable="false"
+        android:layout_marginTop="4dp"/>
+
+   </LinearLayout>

@@ -23,5 +23,11 @@
         <item name="android:windowEnterAnimation">@anim/anim_photo_in</item>
         <item name="android:windowExitAnimation">@anim/anim_photo_out</item>
     </style>
+    
+    <style name="MyCheckbox" parent="Theme.AppCompat.Light">
+        <item name="colorControlNormal">@color/gray</item>
+        <item name="colorControlActivated">@color/switch_btn_colors</item>
+    </style>
+
 
 </resources>
