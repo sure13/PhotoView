@@ -6,4 +6,7 @@
     <string name="intent">网络图片</string>
     <string name="choose">全选</string>
     <string name="list">列表</string>
+    <string name="path">路径</string>
+    <string name="total">总共多少张图片</string>
+    <string name="loading">加载中........</string>
 </resources>

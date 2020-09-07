@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.my.R;
 import com.my.fragment.IntentPhotoFragment;
+import com.my.fragment.ListPhotoFragment;
 import com.my.fragment.LocalPhotoFragment;
 
 
@@ -40,6 +41,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public Fragment cureentFragment;
     private TextView list;
 
+    private ListPhotoFragment listPhotoFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +60,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
         if (intentPhotoFragment == null){
             intentPhotoFragment = IntentPhotoFragment.getInstance(context);
+        }
+        if (listPhotoFragment == null){
+            listPhotoFragment = ListPhotoFragment.getInstance(context);
         }
         initFragment(localPhotoFragment);
         cureentFragment = localPhotoFragment;
@@ -133,6 +139,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.list_photo:
            //      getListInfo();
+                initFragment(listPhotoFragment);
+                cureentFragment = listPhotoFragment;
                  break;
         }
     }

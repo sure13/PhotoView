@@ -3,10 +3,12 @@ package com.my.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.telecom.Call;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -46,9 +48,10 @@ public class LocalPhotoFragment extends Fragment {
 
     private static LocalPhotoFragment localPhotoFragment;
     public  WeakReference<Context> weakReference;
+    private ProgressDialog progressDialog;
 
     public IntentPhotoFragment.CallBackListener callBackListener;
-    private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE , Manifest.permission.READ_EXTERNAL_STORAGE};
+    private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE , Manifest.permission.READ_EXTERNAL_STORAGE };
 
     public LocalPhotoFragment(Context context){
         weakReference = new WeakReference<>(context);
@@ -277,6 +280,18 @@ public class LocalPhotoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.dismiss();
+            }
+        },6000);
+
     }
 
     @Override

@@ -2,13 +2,17 @@ package com.my.fragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.my.R;
 import com.my.activity.MainActivity;
@@ -55,6 +59,7 @@ public class IntentPhotoFragment extends Fragment {
 //    private boolean isShowAndhideStatubar; //是否显示底部状态栏
     public CallBackListener callBackListener;
 
+    private ProgressDialog progressDialog;
 
     public IntentPhotoFragment(Context context){
         weakReference = new WeakReference<>(context);
@@ -236,6 +241,17 @@ public class IntentPhotoFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        progressDialog = new ProgressDialog(getActivity());
+        progressDialog.setMessage(getString(R.string.loading));
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                progressDialog.dismiss();
+            }
+        },6000);
     }
 
     @Override

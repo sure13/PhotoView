@@ -117,10 +117,8 @@ public class PhotoAdapter  extends RecyclerView.Adapter{
                         if (isChecked){
                             mCheckedState.put(position,true);
                      //       choose = true;
-                            Log.i("wxy","----------1-------");
                         }else{
                       //      choose = false;
-                            Log.i("wxy","----------2-------");
                             mCheckedState.delete(position);
                         }
                     }

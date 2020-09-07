@@ -34,4 +34,7 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.10.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
+
+    //上下滑动菜单
+    implementation 'com.sothree.slidinguppanel:library:3.3.0'
 }
