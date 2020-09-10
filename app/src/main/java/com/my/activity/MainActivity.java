@@ -35,13 +35,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView intentText;
     private LocalPhotoFragment localPhotoFragment;
     private IntentPhotoFragment intentPhotoFragment;
+    private ListPhotoFragment listPhotoFragment;
     private Button chooseButton;
     private Button deleteButton;
     public   RelativeLayout bottomRelativeLayout;
     public Fragment cureentFragment;
     private TextView list;
 
-    private ListPhotoFragment listPhotoFragment;
+
 
 
     @Override
@@ -104,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 cureentFragment = localPhotoFragment;
                 setTextViewColor(true,localText);
                 setTextViewColor(false,intentText);
+                setTextViewColor(false,list);
                 showAndHideStatubar(false);
                 break;
             case R.id.intent_photo:
@@ -111,6 +113,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 cureentFragment = intentPhotoFragment;
                 setTextViewColor(true,intentText);
                 setTextViewColor(false,localText);
+                setTextViewColor(false,list);
                 showAndHideStatubar(false);
                 break;
             case R.id.choose:
@@ -141,6 +144,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
            //      getListInfo();
                 initFragment(listPhotoFragment);
                 cureentFragment = listPhotoFragment;
+                setTextViewColor(false,intentText);
+                setTextViewColor(false,localText);
+                setTextViewColor(true,list);
                  break;
         }
     }

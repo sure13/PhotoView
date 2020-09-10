@@ -40,37 +40,7 @@
         android:layout_height="match_parent"
         android:layout_marginTop="@dimen/top_margin"
         android:layout_below="@id/linearlayout"/>
-    <RelativeLayout
-        android:id="@+id/bottom_statubar"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="#efefef"
-        android:paddingTop="@dimen/top_margin"
-        android:paddingBottom="@dimen/top_margin"
-        android:visibility="gone"
-        >
-
-        <Button
-            android:id="@+id/choose"
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:text="@string/choose"
-            android:background="@drawable/button_selector"
-            android:layout_marginRight="200dp"
-            android:layout_alignParentRight="true"
-            />
-
-        <Button
-            android:id="@+id/delete_all"
-            android:layout_width="120dp"
-            android:layout_height="50dp"
-            android:layout_marginRight="@dimen/title_margin"
-            android:background="@drawable/button_selector"
-            android:layout_alignParentRight="true"
-            android:text="@string/delete" />
-
-    </RelativeLayout>
+    <include layout="@layout/bottom_layout"/>
 
 
 </RelativeLayout>

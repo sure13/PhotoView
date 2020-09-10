@@ -107,7 +107,7 @@ public class PhotoAdapter  extends RecyclerView.Adapter{
                     if (onChildClick != null){
                         onChildClick.onItemLongClick(position);
                     }
-                    return false;
+                    return true;
                 }
             });
             ((PhotoViewHolder) holder).checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

@@ -1,58 +1,58 @@
 package com.my.fragment;
 
 
-import android.content.ContentProvider;
 import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.Context;
 
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
+import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.my.R;
-import com.my.dao.Dao;
+import com.my.activity.PhotoActivity;
 import com.my.util.MediaUtil;
 
 import java.io.File;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ListPhotoFragment extends Fragment {
 
-    private WindowManager windowManager;
-    private WindowManager.LayoutParams layoutParams;
 
     private WeakReference<Context> weakReference;
     public static  ListPhotoFragment listFragment;
     private Context context;
 
     private RecyclerView recyclerView;
+    private MyAdapter myAdapter;
+    private LinearLayoutManager linearLayoutManager;
+    private TextView toastText;
 
     private String UsbPath;
-    private String cureentPath;
-    private List<String> cureentList;
+    private ContentResolver contentResolver;
+    private ArrayList<String> paths ; //图片的路径列表/所有图片的集合（/storage/8EFB-822B/图片/xxx.png（jpg））
+    private List<String> parentDirs ;//图片所在的路径/所有路径的集合(图片)
+    private List<String> parentImage;//图片所在的绝对路径(/storage/8EFB-822B/图片/)
+    private View view;
 
-    public static final int REQUEST_CODE = 1;
 
     public ListPhotoFragment(Context context){
         weakReference = new WeakReference<>(context);
@@ -74,108 +74,78 @@ public class ListPhotoFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        return super.onCreateView(inflater, container, savedInstanceState);
+        view = LayoutInflater.from(context).inflate(R.layout.item_one,container,false);
+        initView(view);
+        return view;
+    }
+
+    private void initView(View view) {
+        recyclerView = (RecyclerView) view.findViewById(R.id.item_one_rv);
+        toastText = (TextView) view.findViewById(R.id.toast_text);
     }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (checkAlertPermission(context)) {
-            initData();
-            getPhotoListInfo(UsbPath);
-        }else{
-            requestAlertWindowPermission();
-        }
-        Log.i("wj","----------onActivityCreated------------------");
+        initData();
     }
 
-    private void requestAlertWindowPermission() {
-        Intent intent = new Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION);
-        intent.setData(Uri.parse("package:" + context.getPackageName()));
-        startActivityForResult(intent, REQUEST_CODE);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                if (Settings.canDrawOverlays(context)) {
-                    initData();
-                    getPhotoListInfo(UsbPath);
-                }
-            }
-        }
-    }
-
-    public boolean checkAlertPermission(Context context){
-        Boolean result = true;
-        if (Build.VERSION.SDK_INT >= 23){
-            try {
-                Class classz = Settings.class;
-                Method method = classz.getDeclaredMethod("canDrawOverlays", Context.class);
-                result = (Boolean) method.invoke(null,context);
-            }catch (Exception e){
-                e.printStackTrace();
-            }
-        }
-        return result;
-    }
 
     private void initData() {
-        windowManager = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
-        layoutParams = new WindowManager.LayoutParams();
-        layoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        layoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
-        layoutParams.packageName = context.getPackageName();
-        layoutParams.flags = WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL | WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE
-                | WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR | WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN;
-        //大于8.0
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            layoutParams.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY;
-        } else {
-            layoutParams.type = WindowManager.LayoutParams.TYPE_PHONE;
-        }
-        layoutParams.gravity = Gravity.CENTER;
-        LayoutInflater mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = mInflater.inflate(R.layout.item_one, null);
-        recyclerView = (RecyclerView) view.findViewById(R.id.item_one_rv);
-        windowManager.addView(view,layoutParams);
+        paths = new ArrayList<>();
+        parentDirs = new ArrayList<>();
+        parentImage= new ArrayList<>();
+        contentResolver = context.getContentResolver();
         UsbPath = MediaUtil.getUsbPath(context);
-        cureentList = new ArrayList<>();
-    }
+        if (UsbPath == null || UsbPath.equals("")){
+            toastText.setVisibility(View.VISIBLE);
+        }else{
+            toastText.setVisibility(View.GONE);
+            getImage();
+            myAdapter = new MyAdapter(context,parentDirs,parentImage);
+            linearLayoutManager = new LinearLayoutManager(context);
+            recyclerView.setLayoutManager(linearLayoutManager);
+            recyclerView.setAdapter(myAdapter);
+            myAdapter.setOnItemClickListener(new OnItemClickListener() {
+                @Override
+                public void onItemClick(int position) {
 
-
-
-
-    private void getPhotoListInfo(String path) {
-        File file = new File(path);
-        if (file == null || !file.exists()){
-            return;
-        }
-        File[] list = file.listFiles();
-            if ((list != null) && (list.length > 0)){
-                for (File file1:list){
-                    if (file1.isDirectory()){
-                        cureentPath = path + "/" + file1.getName();
-                   //     Log.i("wxy","--------1-------"+cureentPath);
-                        getPhotoListInfo(cureentPath);
-                    }else if(isPictureFile(file1)){
-                        cureentPath = path +"/";
-                        saveCurrentPath(cureentPath);
-                  //      Log.i("wxy","--------2-------"+cureentPath);
-                    }
+                    Intent intent = new Intent(context,PhotoActivity.class);
+                    intent.putStringArrayListExtra("paths",paths);
+                    intent.putExtra("dirName",parentImage.get(position));
+                    context.startActivity(intent);
                 }
-            }
+            });
+        }
+
     }
 
-    private void saveCurrentPath(String cureentPath) {
-        ContentResolver contentResolver = context.getContentResolver();
-        Uri uri = Uri.parse("content://com.action.myprovider/photo_info");
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(Dao.PATH,cureentPath);
-        contentResolver.insert(uri,contentValues);
+    private void getImage() {
+        Uri mImageUri = MediaStore.Images.Media.EXTERNAL_CONTENT_URI;
+        // 获得图片
+        Cursor mCursor = contentResolver.query(mImageUri, null,
+                MediaStore.Images.Media.MIME_TYPE + "=? or "
+                        + MediaStore.Images.Media.MIME_TYPE + "=?",
+                new String[] { "image/jpeg", "image/png" },MediaStore.Images.Media.DATE_MODIFIED);
+
+        while (mCursor.moveToNext()){
+            String path = mCursor.getString(mCursor.getColumnIndex(MediaStore.Images.Media.DATA));// 路径
+            paths.add(path);
+            //获取到本机中所有的图片后，要对图片进行分类，因此通过路径中的parentDir文件来问分类
+            File file = new File(path);
+            File parentFile= file.getParentFile();
+            String parentFileString = parentFile.getAbsolutePath();
+            String ParentFileName = parentFileString.substring(parentFileString.lastIndexOf("/")+1);
+            if (parentDirs.contains(ParentFileName)){
+                continue;
+            }else {
+                parentImage.add(parentFile.toString());
+                parentDirs.add(ParentFileName);
+            }
+        }
     }
+
+
 
     public boolean isPictureFile(File file){
         String name = file.getName().toUpperCase();
@@ -188,34 +158,28 @@ public class ListPhotoFragment extends Fragment {
 
     @Override
     public void onStart() {
-        getPathList();
-        Log.i("wxy","------------size-----------"+cureentList.size());
         super.onStart();
     }
 
-    private void getPathList() {
-        ContentResolver contentResolver = context.getContentResolver();
-        Uri uri = Uri.parse("content://com.action.myprovider/photo_info");
-        Cursor cursor = contentResolver.query(uri,null,null,null,null,null);
-        if (cursor != null && cursor.moveToFirst() ){
-            do {
-                String path = cursor.getString(cursor.getColumnIndex(Dao.PATH));
-                if (!cureentList.contains(path)) {
-                    Log.i("wxy","----------path------------"+path);
-                    cureentList.add(path);
-                }
-            }while (cursor.moveToNext());
-        }
-        if (cursor != null){
-            cursor.close();
-        }
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
     public class MyAdapter extends RecyclerView.Adapter{
+
+        private Context context;
+        private List<String> parentDirs;
+        private List<String> parentImage;
+        private List<String> currentList;
+
+        private OnItemClickListener onItemClickListener;
+
+        public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+            this.onItemClickListener = onItemClickListener;
+        }
+
+        public MyAdapter(Context context,List<String> parentDirs, List<String> parentImage){
+            this.context = context;
+            this.parentDirs = parentDirs;
+            this.parentImage = parentImage;
+            currentList = new ArrayList<>();
+        }
 
         @NonNull
         @Override
@@ -225,16 +189,61 @@ public class ListPhotoFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof MyHolder){
-
+                ((MyHolder) holder).pathText.setText(parentDirs.get(position));
+                Log.i("wxy","-------------position--------------" + position);
+                String currentPath = parentImage.get(position);
+                getLocalPhotoList(currentPath);
+                ((MyHolder) holder).totalText.setText("一共" + currentList.size() + "张图片");
+                Glide.with(context).load(currentList.get(0)).into(((MyHolder) holder).coverImage);
+                ((MyHolder) holder).linearLayout.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (onItemClickListener != null){
+                            onItemClickListener.onItemClick(position);
+                        }
+//                        for (int i=0;i<photoList.size();i++){
+//                            Log.i("wxy","-------------item--------------"+photoList.get(i));
+//                        }
+//                        Intent intent = new Intent(context, PhotoActivity.class);
+//                        Bundle  bundle = new Bundle();
+//                        bundle.putSerializable("data", (Serializable) photoList);
+//                        intent.putExtras(bundle);
+//                //        intent.putStringArrayListExtra("data", (ArrayList<String>) photoList);
+//                        context.startActivity(intent);
+                    }
+                });
             }
+        }
+
+        private void getLocalPhotoList(String currentPath) {
+                File file = new File(currentPath);
+                if (file == null || !file.exists()){
+                    return;
+                }
+                currentList.clear();
+                File[] list = file.listFiles();
+                if ((list != null) && (list.length > 0)){
+                    for (File file1:list){
+                       if(isPictureFile(file1)){
+                            currentList.add(currentPath + "/" + file1.getName());
+                        }
+                    }
+                }
         }
 
         @Override
         public int getItemCount() {
-            return 0;
+            return parentDirs.size();
         }
+
+        @Override
+        public long getItemId(int position) {
+            return position;
+        }
+
+
     }
 
 
@@ -251,5 +260,9 @@ public class ListPhotoFragment extends Fragment {
             coverImage = (ImageView) itemView.findViewById(R.id.cover);
             linearLayout = (LinearLayout) itemView.findViewById(R.id.linearlayout);
         }
+    }
+
+    public interface OnItemClickListener{
+        void onItemClick(int position);
     }
 }

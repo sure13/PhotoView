@@ -26,6 +26,12 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.PhotoActivity">
+            <intent-filter>
+                <action android:name="com.action.photo"/>
+            </intent-filter>
+        </activity>
+
         <provider
             android:authorities="com.action.myprovider"
             android:name=".dao.MyProvider"/>

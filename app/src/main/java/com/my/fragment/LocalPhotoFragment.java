@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.my.R;
 import com.my.adapter.PhotoAdapter;
@@ -37,6 +38,7 @@ public class LocalPhotoFragment extends Fragment {
     private View view;
     private RecyclerView recyclerView;
     private PhotoAdapter adapter;
+    private TextView toastText;
 
     private String UsbPath;
     private String cureentPath;
@@ -84,6 +86,7 @@ public class LocalPhotoFragment extends Fragment {
 
     private void initView(View view) {
         recyclerView = (RecyclerView) view.findViewById(R.id.item_one_rv);
+        toastText = (TextView) view.findViewById(R.id.toast_text);
     }
 
     @Override
@@ -130,13 +133,20 @@ public class LocalPhotoFragment extends Fragment {
 
     private void initData() {
         UsbPath = MediaUtil.getUsbPath(context);
-        getLocalPhotoList(UsbPath);
-        selectPositionList = new ArrayList<>();
-        isShowCheckbox = false;
-        adapter = new PhotoAdapter(context,cureentPhotoList);
-        GridLayoutManager gridLayoutManager = new GridLayoutManager(context,6);
-        recyclerView.setLayoutManager(gridLayoutManager);
-        recyclerView.setAdapter(adapter);
+        if (UsbPath == null || UsbPath.equals("")){
+            toastText.setVisibility(View.VISIBLE);
+        }else{
+            getLocalPhotoList(UsbPath);
+            selectPositionList = new ArrayList<>();
+            isShowCheckbox = false;
+            toastText.setVisibility(View.GONE);
+            adapter = new PhotoAdapter(context,cureentPhotoList);
+            GridLayoutManager gridLayoutManager = new GridLayoutManager(context,6);
+            recyclerView.setLayoutManager(gridLayoutManager);
+            recyclerView.setAdapter(adapter);
+
+        }
+
     }
 
     public void getLocalPhotoList(String path) {
@@ -210,7 +220,7 @@ public class LocalPhotoFragment extends Fragment {
                     refushUI();
                 }
                 isShowCheckbox = !isShowCheckbox;
-                return false;
+                return true;
             }
         });
     }

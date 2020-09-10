@@ -172,7 +172,7 @@ public class IntentPhotoFragment extends Fragment {
                     refushUI();
                 }
                 isShowCheckbox = !isShowCheckbox;
-                return false;
+                return true;
             }
         });
 
@@ -200,13 +200,6 @@ public class IntentPhotoFragment extends Fragment {
                         adapter.deleteAll();
                     }else{
                         for (int j = 0;j<selectPositionList.size();j++){
-
-//                    String position = selectPositionList.get(j);
-//                    int pos = Integer.valueOf(position);
-//                    Log.i("wxy","--------pos-----------"+pos);
-//                    childData.remove(images[pos]);
-//
-//                }
                             String position = selectPositionList.get(j);
                             int pos = Integer.valueOf(position);
                             if (j == 0){
