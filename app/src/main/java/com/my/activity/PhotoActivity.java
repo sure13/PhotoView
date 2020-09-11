@@ -1,22 +1,20 @@
 package com.my.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-
 import com.my.R;
 import com.my.adapter.PhotoAdapter;
 import com.my.dialog.PhotoDialog;
-import com.my.fragment.IntentPhotoFragment;
+import com.my.dialog.PhotoShowActivity;
+import com.my.util.PhotoUtil;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -28,9 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class PhotoActivity  extends AppCompatActivity implements View.OnClickListener {
+public class PhotoActivity  extends BaseActivity implements View.OnClickListener {
 
- //   private List<String> cureentList;
     private RecyclerView recyclerView;
     private PhotoAdapter photoAdapter;
     private Button chooseButton;
@@ -47,30 +44,26 @@ public class PhotoActivity  extends AppCompatActivity implements View.OnClickLis
     private List<String> images = new ArrayList<>();
 
 
-
     @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.photo_activity);
-        initView();
-        initData();
-        initListener();
+    protected int getLayoutId() {
+        return R.layout.photo_activity;
     }
 
-
-    private void initView() {
+    @Override
+    protected void initView() {
         recyclerView = (RecyclerView) findViewById(R.id.recycleview);
         chooseButton = (Button) findViewById(R.id.choose);
         deleteButton = (Button) findViewById(R.id.delete_all);
         bottomRelativeLayout = (RelativeLayout) findViewById(R.id.bottom_statubar);
     }
 
-    private void initData() {
+    @Override
+    protected void initData() {
         context = getApplicationContext();
         Intent intent = getIntent();
         paths = intent.getParcelableArrayListExtra("paths");
         dirName = intent.getStringExtra("dirName");
-        getLocalPhotoList(dirName);
+        images = PhotoUtil.getPhotoList(dirName);
         selectPositionList = new ArrayList<>();
         isShowCheckbox = false;
         photoAdapter = new PhotoAdapter(context,images);
@@ -79,32 +72,8 @@ public class PhotoActivity  extends AppCompatActivity implements View.OnClickLis
         recyclerView.setAdapter(photoAdapter);
     }
 
-    private void getLocalPhotoList(String currentPath) {
-        File file = new File(currentPath);
-        if (file == null || !file.exists()){
-            return;
-        }
-        images.clear();
-        File[] list = file.listFiles();
-        if ((list != null) && (list.length > 0)){
-            for (File file1:list){
-                if(isPictureFile(file1)){
-                    images.add(currentPath + "/" + file1.getName());
-                }
-            }
-        }
-    }
-
-    public boolean isPictureFile(File file){
-        String name = file.getName().toUpperCase();
-        if ((!name.startsWith("."))
-                && ((name.endsWith(".JPG")) ||(name.endsWith(".BMP")) || (name.endsWith(".PNG")) || (name.endsWith(".GIF")))){
-            return true;
-        }
-        return false;
-    }
-
-    private void initListener() {
+    @Override
+    protected void initListener() {
         photoAdapter.setOnChildClick(new PhotoAdapter.OnChildClick() {
             @Override
             public void onItemClick(int position, List<String> itemImgs) {
@@ -123,9 +92,9 @@ public class PhotoActivity  extends AppCompatActivity implements View.OnClickLis
                     bundle.putInt("currentPostion", position);
                     bundle.putStringArrayList("imageData", (ArrayList<String>) itemImgs);
 
-                    PhotoDialog photoDialog = new PhotoDialog();
-                    photoDialog.setArguments(bundle);
-                //    photoDialog.show(getFragmentManager(), "");
+                    Intent intent = new Intent(PhotoActivity.this, PhotoShowActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
             }
 
@@ -148,6 +117,8 @@ public class PhotoActivity  extends AppCompatActivity implements View.OnClickLis
         chooseButton.setOnClickListener(this);
         deleteButton.setOnClickListener(this);
     }
+
+
 
 
     private void refushUI() {

@@ -1,17 +1,10 @@
 package com.my.activity;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-
-
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -24,10 +17,9 @@ import com.my.fragment.ListPhotoFragment;
 import com.my.fragment.LocalPhotoFragment;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, IntentPhotoFragment.CallBackListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, IntentPhotoFragment.CallBackListener {
 
 
-    private String[] permissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE , Manifest.permission.READ_EXTERNAL_STORAGE};
     private Context context;
 
     private FrameLayout frameLayout;
@@ -43,19 +35,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private TextView list;
 
 
-
-
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        context = getApplicationContext();
-        initView();
-        initData();
-        initListener();
+    protected int getLayoutId() {
+        return R.layout.activity_main;
     }
 
-    private void initData() {
+    @Override
+    protected void initData() {
+        context = getApplicationContext();
         if (localPhotoFragment == null){
             localPhotoFragment = LocalPhotoFragment.getInstance(context);
         }
@@ -68,8 +55,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initFragment(localPhotoFragment);
         cureentFragment = localPhotoFragment;
         setTextViewColor(true,localText);
-
     }
+
 
     public void initFragment(Fragment fragment){
         FragmentManager fragmentManager = getSupportFragmentManager();
@@ -78,8 +65,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         transaction.commit();
     }
 
-
-    private void initView() {
+    @Override
+    protected void initView() {
         frameLayout = (FrameLayout) findViewById(R.id.framelayout);
         localText = (TextView) findViewById(R.id.local_photo);
         intentText = (TextView) findViewById(R.id.intent_photo);
@@ -89,13 +76,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list = (TextView) findViewById(R.id.list_photo);
     }
 
-    private void initListener() {
+    @Override
+    protected void initListener() {
         localText.setOnClickListener(this);
         intentText.setOnClickListener(this);
         chooseButton.setOnClickListener(this);
         deleteButton.setOnClickListener(this);
         list.setOnClickListener(this);
     }
+
+
 
     @Override
     public void onClick(View v) {
@@ -141,7 +131,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 setTextViewColor(true,deleteButton);
                 break;
             case R.id.list_photo:
-           //      getListInfo();
                 initFragment(listPhotoFragment);
                 cureentFragment = listPhotoFragment;
                 setTextViewColor(false,intentText);
@@ -151,12 +140,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     }
 
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-    }
 
 
     public void setTextViewColor(boolean bool, TextView textView){

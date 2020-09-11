@@ -9,7 +9,6 @@ import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
-import android.telecom.Call;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,7 @@ import com.my.R;
 import com.my.adapter.PhotoAdapter;
 import com.my.dialog.PhotoDialog;
 import com.my.util.MediaUtil;
+import com.my.util.PhotoUtil;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -42,7 +42,7 @@ public class LocalPhotoFragment extends Fragment {
 
     private String UsbPath;
     private String cureentPath;
-    private ArrayList<String> cureentPhotoList = new ArrayList<>();
+    private ArrayList<String> cureentPhotoList;
     private Context context;
 
     private boolean isShowCheckbox;//是否显示Checkbox
@@ -89,7 +89,7 @@ public class LocalPhotoFragment extends Fragment {
         toastText = (TextView) view.findViewById(R.id.toast_text);
     }
 
-    @Override
+        @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         checkActivityPermission();
@@ -132,11 +132,12 @@ public class LocalPhotoFragment extends Fragment {
     }
 
     private void initData() {
-        UsbPath = MediaUtil.getUsbPath(context);
+         UsbPath = MediaUtil.getUsbPath(context);
+         cureentPhotoList = new ArrayList<>();
         if (UsbPath == null || UsbPath.equals("")){
             toastText.setVisibility(View.VISIBLE);
         }else{
-            getLocalPhotoList(UsbPath);
+            cureentPhotoList = PhotoUtil.getLocalPhotoList(UsbPath);
             selectPositionList = new ArrayList<>();
             isShowCheckbox = false;
             toastText.setVisibility(View.GONE);
@@ -149,33 +150,6 @@ public class LocalPhotoFragment extends Fragment {
 
     }
 
-    public void getLocalPhotoList(String path) {
-        File file = new File(path);
-        if (file == null || !file.exists()){
-            return;
-        }
-        File[] list = file.listFiles();
-        if ((list != null) && (list.length > 0)){
-            for (File file1:list){
-                if (file1.isDirectory()){
-                    cureentPath = path + "/" + file1.getName();
-                    getLocalPhotoList(cureentPath);
-                }else if(isPictureFile(file1)){
-                    cureentPhotoList.add(cureentPath + "/" + file1.getName());
-                }
-            }
-        }
-
-    }
-
-    public boolean isPictureFile(File file){
-        String name = file.getName().toUpperCase();
-        if ((!name.startsWith("."))
-                && ((name.endsWith(".JPG")) ||(name.endsWith(".BMP")) || (name.endsWith(".PNG")) || (name.endsWith(".GIF")))){
-            return true;
-        }
-        return false;
-    }
 
     private void initListener() {
 

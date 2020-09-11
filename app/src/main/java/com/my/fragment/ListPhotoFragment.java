@@ -21,6 +21,7 @@ import com.bumptech.glide.Glide;
 import com.my.R;
 import com.my.activity.PhotoActivity;
 import com.my.util.MediaUtil;
+import com.my.util.PhotoUtil;
 
 import java.io.File;
 import java.io.Serializable;
@@ -147,15 +148,6 @@ public class ListPhotoFragment extends Fragment {
 
 
 
-    public boolean isPictureFile(File file){
-        String name = file.getName().toUpperCase();
-        if ((!name.startsWith("."))
-                && ((name.endsWith(".JPG")) ||(name.endsWith(".BMP")) || (name.endsWith(".PNG")) || (name.endsWith(".GIF")))){
-            return true;
-        }
-        return false;
-    }
-
     @Override
     public void onStart() {
         super.onStart();
@@ -194,7 +186,7 @@ public class ListPhotoFragment extends Fragment {
                 ((MyHolder) holder).pathText.setText(parentDirs.get(position));
                 Log.i("wxy","-------------position--------------" + position);
                 String currentPath = parentImage.get(position);
-                getLocalPhotoList(currentPath);
+                currentList = PhotoUtil.getPhotoList(currentPath);
                 ((MyHolder) holder).totalText.setText("一共" + currentList.size() + "张图片");
                 Glide.with(context).load(currentList.get(0)).into(((MyHolder) holder).coverImage);
                 ((MyHolder) holder).linearLayout.setOnClickListener(new View.OnClickListener() {
@@ -203,34 +195,9 @@ public class ListPhotoFragment extends Fragment {
                         if (onItemClickListener != null){
                             onItemClickListener.onItemClick(position);
                         }
-//                        for (int i=0;i<photoList.size();i++){
-//                            Log.i("wxy","-------------item--------------"+photoList.get(i));
-//                        }
-//                        Intent intent = new Intent(context, PhotoActivity.class);
-//                        Bundle  bundle = new Bundle();
-//                        bundle.putSerializable("data", (Serializable) photoList);
-//                        intent.putExtras(bundle);
-//                //        intent.putStringArrayListExtra("data", (ArrayList<String>) photoList);
-//                        context.startActivity(intent);
                     }
                 });
             }
-        }
-
-        private void getLocalPhotoList(String currentPath) {
-                File file = new File(currentPath);
-                if (file == null || !file.exists()){
-                    return;
-                }
-                currentList.clear();
-                File[] list = file.listFiles();
-                if ((list != null) && (list.length > 0)){
-                    for (File file1:list){
-                       if(isPictureFile(file1)){
-                            currentList.add(currentPath + "/" + file1.getName());
-                        }
-                    }
-                }
         }
 
         @Override

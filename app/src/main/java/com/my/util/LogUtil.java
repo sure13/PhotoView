@@ -3,7 +3,7 @@ package com.my.util;
 import android.util.Log;
 
 public class LogUtil {
-    private static String TAG = "mwb";
+    private static String TAG = "wxy";
     private static boolean isShow = true;
 
     public static void i(String msg) {

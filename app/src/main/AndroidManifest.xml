@@ -32,6 +32,9 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".activity.BaseActivity"/>
+        <activity android:name=".dialog.PhotoShowActivity"/>
+
         <provider
             android:authorities="com.action.myprovider"
             android:name=".dao.MyProvider"/>
