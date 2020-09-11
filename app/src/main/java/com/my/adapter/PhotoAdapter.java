@@ -104,10 +104,7 @@ public class PhotoAdapter  extends RecyclerView.Adapter{
             ((PhotoViewHolder) holder).imageView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (onChildClick != null){
-                        onChildClick.onItemLongClick(position);
-                    }
-                    return true;
+                    return onChildClick.onItemLongClick(position);
                 }
             });
             ((PhotoViewHolder) holder).checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {

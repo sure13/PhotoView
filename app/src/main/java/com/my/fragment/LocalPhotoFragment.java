@@ -6,6 +6,7 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,11 +18,10 @@ import android.widget.TextView;
 
 import com.my.R;
 import com.my.adapter.PhotoAdapter;
-import com.my.dialog.PhotoDialog;
+import com.my.dialog.PhotoShowActivity;
 import com.my.util.MediaUtil;
 import com.my.util.PhotoUtil;
 
-import java.io.File;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -171,9 +171,9 @@ public class LocalPhotoFragment extends Fragment {
                     bundle.putInt("currentPostion", position);
                     bundle.putStringArrayList("imageData", (ArrayList<String>) itemImgs);
 
-                    PhotoDialog photoDialog = new PhotoDialog();
-                    photoDialog.setArguments(bundle);
-                    photoDialog.show(getFragmentManager(), "");
+                    Intent intent = new Intent(context, PhotoShowActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
             }
 

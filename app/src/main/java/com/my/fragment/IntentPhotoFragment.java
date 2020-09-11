@@ -5,24 +5,22 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ProgressBar;
 
 import com.my.R;
-import com.my.activity.MainActivity;
+import com.my.activity.PhotoActivity;
 import com.my.adapter.PhotoAdapter;
-import com.my.dialog.PhotoDialog;
+import com.my.dialog.PhotoShowActivity;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -147,9 +145,9 @@ public class IntentPhotoFragment extends Fragment {
                     bundle.putInt("currentPostion", position);
                     bundle.putStringArrayList("imageData", (ArrayList<String>) itemImgs);
 
-                    PhotoDialog photoDialog = new PhotoDialog();
-                    photoDialog.setArguments(bundle);
-                    photoDialog.show(getFragmentManager(), "");
+                    Intent intent = new Intent(context, PhotoShowActivity.class);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
 
 

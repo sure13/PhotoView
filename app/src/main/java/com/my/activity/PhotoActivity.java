@@ -12,17 +12,13 @@ import android.widget.TextView;
 
 import com.my.R;
 import com.my.adapter.PhotoAdapter;
-import com.my.dialog.PhotoDialog;
 import com.my.dialog.PhotoShowActivity;
 import com.my.util.PhotoUtil;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
