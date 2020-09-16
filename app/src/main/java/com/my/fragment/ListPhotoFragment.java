@@ -184,7 +184,7 @@ public class ListPhotoFragment extends Fragment {
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, final int position) {
             if (holder instanceof MyHolder){
                 ((MyHolder) holder).pathText.setText(parentDirs.get(position));
-                Log.i("wxy","-------------position--------------" + position);
+      //          Log.i("wxy","-------------position--------------" + position);
                 String currentPath = parentImage.get(position);
                 currentList = PhotoUtil.getPhotoList(currentPath);
                 ((MyHolder) holder).totalText.setText("一共" + currentList.size() + "张图片");

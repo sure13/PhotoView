@@ -10,4 +10,6 @@
     <string name="total">总共多少张图片</string>
     <string name="loading">加载中........</string>
     <string name="none">无图片</string>
+    <string name="save">保存</string>
+
 </resources>
